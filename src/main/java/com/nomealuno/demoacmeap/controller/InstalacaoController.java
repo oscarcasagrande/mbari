@@ -70,6 +70,10 @@ public class InstalacaoController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> cadastrarInstalacao(@RequestBody Instalacao instalacao)
 	{
+		Optional<Cliente> cliente = clienteRepository.findByCpf(instalacao.getCliente().getCpf());
+		
+		instalacao.setCliente(cliente.get());
+		
 		Instalacao instalacaoCriada = instalacaoRepository.save(instalacao);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(instalacaoCriada.getId()).toUri();
 		return ResponseEntity.created(location).build();

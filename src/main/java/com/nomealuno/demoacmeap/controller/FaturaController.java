@@ -76,6 +76,11 @@ public class FaturaController {
 	@PostMapping("v1/faturas")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> gerarFatura(@RequestBody Fatura fatura) {
+		
+		Optional<Instalacao> instalacaoRecuperada = instalacaoRepository.findByCodigo(fatura.getInstalacao().getCodigo());
+		
+		fatura.setInstalacao(instalacaoRecuperada.get());
+		
 		Fatura faturaCriada = faturaRepository.save(fatura);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(faturaCriada.getId()).toUri();
