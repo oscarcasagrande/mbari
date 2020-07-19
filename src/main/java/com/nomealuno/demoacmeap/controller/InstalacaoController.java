@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.nomealuno.demoacmeap.domain.Cliente;
 import com.nomealuno.demoacmeap.domain.Instalacao;
+import com.nomealuno.demoacmeap.exception.RecursoNotFoundException;
 import com.nomealuno.demoacmeap.repository.ClienteRepository;
 import com.nomealuno.demoacmeap.repository.InstalacaoRepository;
 
@@ -42,7 +43,14 @@ public class InstalacaoController {
 	{
 		
 		ArrayList<Instalacao> listaInstalacoes = new ArrayList<Instalacao>();
-		listaInstalacoes = (ArrayList<Instalacao>) instalacaoRepository.findAll();
+		
+		try {
+			listaInstalacoes = (ArrayList<Instalacao>) instalacaoRepository.findAll();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("Erro ao recuperar lista de instalações");
+		}
+		
 			
 		return listaInstalacoes;
 	}
@@ -52,17 +60,44 @@ public class InstalacaoController {
 	@GetMapping("v1/instalacoes/{codigo}")
 	public Optional<Instalacao> getInstalacao(@PathVariable String codigo)
 	{
-
-		return instalacaoRepository.findByCodigo(codigo);
+		
+		Optional<Instalacao> instalacao = null;
+		
+		try {
+			instalacao = instalacaoRepository.findByCodigo(codigo);
+			if (instalacao.get() == null)
+				throw new RecursoNotFoundException ("codigo instalacao - " + codigo);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("codigo instalacao - " + codigo);
+		}
+		
+		return instalacao;
 	}
 	
 	@ApiOperation(value = "Consulta uma instalação pelo CPF")
 	@GetMapping("v1/instalacoes/cpf/{cpf}")
 	public List<Instalacao> getInstalacaoPorCPF(@PathVariable String cpf)
 	{
-		Optional<Cliente> cliente = clienteRepository.findByCpf(cpf);
 		
-		return instalacaoRepository.findByCliente(cliente.get());
+		Optional<Cliente> cliente;
+		List<Instalacao> listaInstalacao = null;
+		
+		try {
+			cliente = clienteRepository.findByCpf(cpf);
+			
+			if (cliente.get() == null)
+				throw new RecursoNotFoundException ("CPF - " + cpf);
+			
+			listaInstalacao = instalacaoRepository.findByCliente(cliente.get());
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("CPF inválido - " + cpf);
+		}
+		
+
+		
+		return listaInstalacao;
 	}
 	
 	@ApiOperation(value = "Cadastrar uma nova instalação")
@@ -70,12 +105,25 @@ public class InstalacaoController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> cadastrarInstalacao(@RequestBody Instalacao instalacao)
 	{
-		Optional<Cliente> cliente = clienteRepository.findByCpf(instalacao.getCliente().getCpf());
+		Optional<Cliente> cliente;
+		Instalacao instalacaoCriada;
+		URI location = null;
+		try {
+			cliente = clienteRepository.findByCpf(instalacao.getCliente().getCpf());
+			
+			if (cliente.get() == null)
+				throw new RecursoNotFoundException ("CPF - " + instalacao.getCliente().getCpf());
+			
+			instalacao.setCliente(cliente.get());
+			
+			instalacaoCriada = instalacaoRepository.save(instalacao);
+			location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(instalacaoCriada.getId()).toUri();
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("CPF - " + instalacao.getCliente().getCpf());
+		}
 		
-		instalacao.setCliente(cliente.get());
-		
-		Instalacao instalacaoCriada = instalacaoRepository.save(instalacao);
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(instalacaoCriada.getId()).toUri();
 		return ResponseEntity.created(location).build();
 	}
 

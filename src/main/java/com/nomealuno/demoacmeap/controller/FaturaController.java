@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.nomealuno.demoacmeap.domain.Cliente;
 import com.nomealuno.demoacmeap.domain.Fatura;
 import com.nomealuno.demoacmeap.domain.Instalacao;
+import com.nomealuno.demoacmeap.exception.RecursoNotFoundException;
 import com.nomealuno.demoacmeap.repository.ClienteRepository;
 import com.nomealuno.demoacmeap.repository.FaturaRepository;
 import com.nomealuno.demoacmeap.repository.InstalacaoRepository;
@@ -46,7 +47,13 @@ public class FaturaController {
 	public List<Fatura> getAllFaturas() {
 
 		ArrayList<Fatura> listaFaturas = new ArrayList<Fatura>();
-		listaFaturas = (ArrayList<Fatura>) faturaRepository.findAll();
+		try {
+			listaFaturas = (ArrayList<Fatura>) faturaRepository.findAll();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("Erro ao recuperar faturas");
+		}
+		
 
 		return listaFaturas;
 	}
@@ -55,14 +62,39 @@ public class FaturaController {
 	@GetMapping("v1/faturas/{codigo}")
 	public Optional<Fatura> getFatura(@PathVariable String codigo) {
 
-		return faturaRepository.findByCodigo(codigo);
+		Optional<Fatura> fatura = null;
+		
+		try {
+			fatura = faturaRepository.findByCodigo(codigo);
+			if (fatura.get() == null)
+				throw new RecursoNotFoundException ("codigo de fatura inválido - " + codigo);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("codigo de fatura inválido - " + codigo);
+		}
+		
+		
+		return fatura;
 	}
 
 	@ApiOperation(value = "Consulta as faturas pelo CPF do cliente")
 	@GetMapping("v1/faturas/cpf/{cpf}")
 	public List<Fatura> getFaturasPorCPF(@PathVariable String cpf) {
-		Optional<Cliente> cliente = clienteRepository.findByCpf(cpf);
-		List<Instalacao> listaInstalacao = instalacaoRepository.findByCliente(cliente.get());
+		
+		Optional<Cliente> cliente = null;
+		List<Instalacao> listaInstalacao;
+		
+		try {
+			cliente = clienteRepository.findByCpf(cpf);
+			if (cliente.get() == null)
+				throw new RecursoNotFoundException ("CPF - " + cpf);
+			
+			listaInstalacao = instalacaoRepository.findByCliente(cliente.get());
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("CPF inválido - " + cpf);
+		}
+		
 
 		List<Fatura> listaFaturasCliente = new ArrayList<Fatura>();
 
@@ -77,13 +109,28 @@ public class FaturaController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> gerarFatura(@RequestBody Fatura fatura) {
 		
-		Optional<Instalacao> instalacaoRecuperada = instalacaoRepository.findByCodigo(fatura.getInstalacao().getCodigo());
+		Optional<Instalacao> instalacaoRecuperada;
+		URI location = null;
 		
-		fatura.setInstalacao(instalacaoRecuperada.get());
+		try {
+			
+			instalacaoRecuperada = instalacaoRepository.findByCodigo(fatura.getInstalacao().getCodigo());
+			if (instalacaoRecuperada.get() == null)
+				throw new RecursoNotFoundException ("codigo instalacao - " + fatura.getInstalacao().getCodigo());
+			
+			fatura.setInstalacao(instalacaoRecuperada.get());
+			
+			Fatura faturaCriada = faturaRepository.save(fatura);
+			location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+					.buildAndExpand(faturaCriada.getId()).toUri();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("Erro ao gerar fatura para a instalacao - " + fatura.getInstalacao().getCodigo());
+		}
+	
+				
 		
-		Fatura faturaCriada = faturaRepository.save(fatura);
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(faturaCriada.getId()).toUri();
 		return ResponseEntity.created(location).build();
 	}
 

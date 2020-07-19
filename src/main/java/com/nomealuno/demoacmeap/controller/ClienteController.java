@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.nomealuno.demoacmeap.domain.Cliente;
+import com.nomealuno.demoacmeap.exception.RecursoNotFoundException;
 import com.nomealuno.demoacmeap.repository.ClienteRepository;
 
 import io.swagger.annotations.Api;
@@ -38,7 +39,13 @@ public class ClienteController {
 	{
 		
 		ArrayList<Cliente> listaClientes = new ArrayList<Cliente>();
-		listaClientes = (ArrayList<Cliente>) clienteRepository.findAll();
+		try {
+			listaClientes = (ArrayList<Cliente>) clienteRepository.findAll();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("Erro ao recuperar lista de clientes");
+		}
+		
 			
 		return listaClientes;
 	}
@@ -50,7 +57,21 @@ public class ClienteController {
 	public Optional<Cliente> getClienteByCpf(@PathVariable String cpf)
 	{
 
-		return clienteRepository.findByCpf(cpf);
+		Optional<Cliente> cliente = null;
+		
+		try {
+			cliente = clienteRepository.findByCpf(cpf);
+			
+			if (cliente.get() == null)
+				throw new RecursoNotFoundException ("CPF inválido - " + cpf);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("CPF inválido - " + cpf);
+		}
+		
+		
+		
+		return cliente;
 	}
 	
 
@@ -60,8 +81,19 @@ public class ClienteController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> criarCliente(@RequestBody Cliente cliente)
 	{
-		Cliente clienteCriado = clienteRepository.save(cliente);
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(clienteCriado.getId()).toUri();
+		Cliente clienteCriado;
+		
+		URI location = null;
+		
+		
+		try {
+			clienteCriado = clienteRepository.save(cliente);
+			
+			location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(clienteCriado.getId()).toUri();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RecursoNotFoundException ("Erro ao cadastrar cliente CPF: " + cliente.getCpf());
+		}
 		return ResponseEntity.created(location).build();
 	}
 
