@@ -5,10 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 public class Endereco {
+
 
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -25,6 +28,7 @@ public class Endereco {
 		
 	}
 
+
 	public Endereco(String logradouro, String bairro, String cidade, String uf) {
 		super();
 		this.logradouro = logradouro;
@@ -33,41 +37,51 @@ public class Endereco {
 		this.uf = uf;
 	}
 
+
 	public long getId() {
 		return id;
 	}
+
 
 	public void setId(long id) {
 		this.id = id;
 	}
 
+
 	public String getLogradouro() {
 		return logradouro;
 	}
+
 
 	public void setLogradouro(String logradouro) {
 		this.logradouro = logradouro;
 	}
 
+
 	public String getBairro() {
 		return bairro;
 	}
+
 
 	public void setBairro(String bairro) {
 		this.bairro = bairro;
 	}
 
+
 	public String getCidade() {
 		return cidade;
 	}
+
 
 	public void setCidade(String cidade) {
 		this.cidade = cidade;
 	}
 
+
 	public String getUf() {
 		return uf;
 	}
+
 
 	public void setUf(String uf) {
 		this.uf = uf;
@@ -75,13 +89,16 @@ public class Endereco {
 	
 	
 
+
 	public long getNumero() {
 		return numero;
 	}
 
+
 	public void setNumero(long numero) {
 		this.numero = numero;
 	}
+
 
 	@Override
 	public String toString() {
