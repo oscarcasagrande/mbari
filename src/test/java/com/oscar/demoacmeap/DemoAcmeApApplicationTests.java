@@ -1,4 +1,4 @@
-package com.nomealuno.demoacmeap;
+package com.oscar.demoacmeap;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

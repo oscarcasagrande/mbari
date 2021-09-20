@@ -10,7 +10,7 @@
     <relativePath />
     <!-- lookup parent from repository -->
   </parent>
-  <groupId>com.nomealuno</groupId>
+  <groupId>com.oscar</groupId>
   <artifactId>demo-acme-ap</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>demo-acme-ap</name>

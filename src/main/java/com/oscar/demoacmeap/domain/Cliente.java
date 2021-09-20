@@ -1,4 +1,4 @@
-package com.nomealuno.demoacmeap.domain;
+package com.oscar.demoacmeap.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
