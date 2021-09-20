@@ -1,24 +1,33 @@
 --insert into ENDERECO (ID, BAIRRO, CIDADE, LOGRADOURO, NUMERO, UF) values (1, 'bairro', 'cidade', 'logradouro', 'numero', 'uf');
 
+
 --Inserindo dados de teste para endereço
 insert into ENDERECO (ID, BAIRRO, CIDADE, LOGRADOURO, NUMERO, UF) values (1, 'Jardim Paquetá', 'Belo Horizonte', 'Rua Susana Maria', '1212', 'MG');
 insert into ENDERECO (ID, BAIRRO, CIDADE, LOGRADOURO, NUMERO, UF) values (2, 'Jardins Paulista', 'São Paulo', 'Alameda Santos', '3500', 'SP');
 insert into ENDERECO (ID, BAIRRO, CIDADE, LOGRADOURO, NUMERO, UF) values (3, 'Jardins Paulista', 'São Paulo', 'Alameda Jau', '1250', 'SP');
 
 
+
+
 --Inserindo dados de teste para cliente
+
 
 insert into CLIENTE (ID, CPF, DATA_NASCIMENTO, NOME, ID_ENDERECO) values (1, '123', '1976-09-12T15:39:52.160Z', 'Aluno Teste A', '1');
 insert into CLIENTE (ID, CPF, DATA_NASCIMENTO, NOME, ID_ENDERECO) values (2, '456', '1980-07-26T08:39:45.160Z', 'Aluno Teste B', '2');
 
+
 --Inserindo dados de teste para instalação
+
 
 insert into INSTALACAO (ID, CODIGO, DATA_INSTALACAO, ID_CLIENTE, ID_ENDERECO) values (1, 'INST-001', '1999-07-26T08:39:45.160Z', '1', '2');
 insert into INSTALACAO (ID, CODIGO, DATA_INSTALACAO, ID_CLIENTE, ID_ENDERECO) values (2, 'INST-002', '2020-06-26T08:39:45.160Z', '2', '2');
 insert into INSTALACAO (ID, CODIGO, DATA_INSTALACAO, ID_CLIENTE, ID_ENDERECO) values (3, 'INST-003', '2019-09-15T08:39:45.160Z', '2', '3');
 
 
+
+
 --Inserindo dados de teste para faturas
+
 
 insert into FATURA (ID, CODIGO, DATA_LEITURA, DATA_VENCIMENTO, NUMERO_LEITURA, VALOR_CONTA, ID_INSTALACAO) values (1, 'FAT001', '2019-01-01T10:42:45.160Z', '2019-01-10T10:42:45.160Z','100999', '100', '1');
 insert into FATURA (ID, CODIGO, DATA_LEITURA, DATA_VENCIMENTO, NUMERO_LEITURA, VALOR_CONTA, ID_INSTALACAO) values (2, 'FAT-002', '2019-02-01T10:42:45.160Z', '2019-02-10T10:42:45.160Z','101234', '255.20', '1');
